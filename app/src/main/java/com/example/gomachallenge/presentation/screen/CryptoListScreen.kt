@@ -4,10 +4,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -37,19 +41,49 @@ fun CryptoListScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Crypto Tracker", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue.copy(alpha = 0.4f))
-            )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue.copy(alpha = 0.4f)),
+                actions = {
+                    IconButton(
+                        onClick = { viewModel.loadData() }, enabled = !uiState.isLoading
+                    ) {
+                        Icon(
+                            Icons.Default.Refresh, contentDescription = "Reload", tint = Color.White
+                        )
+                    }
+                })
         }) { padding ->
-        if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+        when {
+            uiState.isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(8.dp), modifier = Modifier.padding(padding)
-            ) {
-                items(uiState.cryptos) { crypto ->
-                    CryptoItem(crypto = crypto, onClick = { onCryptoClick(crypto) })
+
+            uiState.cryptos.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Press the load button", color = Color.Gray
+                    )
+                }
+            }
+
+            else -> {
+                LazyColumn(
+                    contentPadding = PaddingValues(8.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                ) {
+                    items(uiState.cryptos) { crypto ->
+                        CryptoItem(crypto = crypto, onClick = { onCryptoClick(crypto) })
+                    }
                 }
             }
         }

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gomachallenge.domain.model.Crypto
 import com.example.gomachallenge.domain.repository.CryptoRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -11,7 +13,7 @@ import kotlinx.coroutines.launch
 
 data class CryptoUiState(
     val cryptos: List<Crypto> = emptyList(),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val error: String? = null
 )
 
@@ -23,19 +25,26 @@ class CryptoListViewModel(
 
     private val cache = mutableMapOf<String, Crypto>()
 
-    init {
-        startTracking()
-    }
+    private var hasStarted = false
 
-    private fun startTracking() {
+
+    fun startTracking() {
+        if (hasStarted) return
+        hasStarted = true
         val symbols = listOf("btcusdt", "ethusdt", "adausdt", "solusdt", "xrpusdt")
 
         viewModelScope.launch {
-            repository.observeCryptoTicker(symbols)
-                .collect { updates ->
-                    updates.forEach { crypto ->
+            _state.update { it.copy(isLoading = true) }
+
+
+            try {
+                async { delay(1000) }.await()
+
+                repository.observeCryptoTicker(symbols).collect { cryptoList ->
+                    cryptoList.forEach { crypto ->
                         cache[crypto.symbol] = crypto
                     }
+
                     _state.update {
                         it.copy(
                             cryptos = cache.values.sortedBy { c -> c.symbol },
@@ -43,8 +52,23 @@ class CryptoListViewModel(
                             error = null
                         )
                     }
+
                 }
+
+
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.message ?: "Unknown error") }
+                hasStarted = false
+            }
         }
+    }
+
+    fun loadData() {
+        hasStarted = false
+        cache.clear()
+        _state.value = CryptoUiState()
+        startTracking()
+
     }
 
 //    fun getMockData(): List<Crypto> {
