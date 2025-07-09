@@ -20,7 +20,9 @@ import com.example.gomachallenge.presentation.viewmodel.CryptoListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CryptoListScreen(viewModel: CryptoListViewModel) {
+fun CryptoListScreen(
+    viewModel: CryptoListViewModel, onCryptoClick: (Crypto) -> Unit
+) {
     val mockList: List<Crypto> = viewModel.getMockData()
 
     Scaffold(
@@ -29,14 +31,12 @@ fun CryptoListScreen(viewModel: CryptoListViewModel) {
                 title = { Text("Crypto Tracker", color = Color.White) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue.copy(alpha = 0.4f))
             )
-        }
-    ) { padding ->
+        }) { padding ->
         LazyColumn(
-            contentPadding = PaddingValues(8.dp),
-            modifier = Modifier.padding(padding)
+            contentPadding = PaddingValues(8.dp), modifier = Modifier.padding(padding)
         ) {
             items(mockList) { crypto ->
-                CryptoItem(crypto = crypto, onClick = { /*TODO:*/})
+                CryptoItem(crypto = crypto, onClick = { onCryptoClick(crypto) })
             }
         }
     }
