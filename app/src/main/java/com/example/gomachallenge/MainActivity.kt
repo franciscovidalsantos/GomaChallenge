@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.example.gomachallenge.data.remote.BinanceWebSocketClient
+import com.example.gomachallenge.data.repository.CryptoRepositoryImpl
 import com.example.gomachallenge.presentation.viewmodel.CryptoListViewModel
 import com.example.gomachallenge.ui.theme.GomaChallengeTheme
 
@@ -15,7 +17,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-            val viewModel = remember { CryptoListViewModel() }
+            val viewModel = remember {
+                CryptoListViewModel(
+                    repository = CryptoRepositoryImpl(BinanceWebSocketClient())
+                )
+            }
 
             GomaChallengeTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
