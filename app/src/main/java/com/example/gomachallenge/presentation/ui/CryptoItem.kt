@@ -16,8 +16,7 @@ import com.example.gomachallenge.presentation.ui.util.getCryptoIcon
 
 @Composable
 fun CryptoItem(
-    crypto: Crypto,
-    onClick: () -> Unit
+    crypto: Crypto, onClick: () -> Unit
 ) {
     val isPositive = crypto.priceChange >= 0
     val changeColor = if (isPositive) Color(0xFF4CAF50) else Color(0xFFF44336)
@@ -26,8 +25,9 @@ fun CryptoItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .height(100.dp)
             .padding(8.dp)
-            .clickable { onClick(/* TODO: Navigation to details screen  */) },
+            .clickable { onClick() },
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -47,7 +47,7 @@ fun CryptoItem(
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(crypto.symbol, fontWeight = FontWeight.Bold)
-                Text("Price: $${crypto.price}")
+                Text("$${crypto.price}")
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(

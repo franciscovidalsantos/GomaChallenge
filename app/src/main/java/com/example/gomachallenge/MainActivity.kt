@@ -11,15 +11,33 @@ import com.example.gomachallenge.data.remote.BinanceWebSocketClient
 import com.example.gomachallenge.data.repository.CryptoRepositoryImpl
 import com.example.gomachallenge.presentation.viewmodel.CryptoListViewModel
 import com.example.gomachallenge.ui.theme.GomaChallengeTheme
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
 
+            // Initialize dependencies
+            val okHttpClient = remember {
+                OkHttpClient.Builder()
+                    .pingInterval(20, TimeUnit.SECONDS)
+                    .build()
+            }
+
+            val webSocketClient = remember {
+                BinanceWebSocketClient(okHttpClient)
+            }
+
+            val repository = remember {
+                CryptoRepositoryImpl(webSocketClient)
+            }
+
             val viewModel = remember {
                 CryptoListViewModel(
-                    repository = CryptoRepositoryImpl(BinanceWebSocketClient())
+                    repository = repository,
+                    webSocketClient = webSocketClient,
                 )
             }
 

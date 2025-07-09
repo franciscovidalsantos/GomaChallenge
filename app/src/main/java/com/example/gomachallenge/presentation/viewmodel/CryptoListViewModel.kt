@@ -2,6 +2,7 @@ package com.example.gomachallenge.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gomachallenge.data.remote.CryptoWebSocketClient
 import com.example.gomachallenge.domain.model.Crypto
 import com.example.gomachallenge.domain.repository.CryptoRepository
 import kotlinx.coroutines.async
@@ -11,22 +12,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class CryptoUiState(
-    val cryptos: List<Crypto> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
-
 class CryptoListViewModel(
-    private val repository: CryptoRepository
-) : ViewModel() {
+    private val repository: CryptoRepository,
+    private val webSocketClient: CryptoWebSocketClient,
+
+    ) : ViewModel() {
     private val _state = MutableStateFlow(CryptoUiState())
     val state: StateFlow<CryptoUiState> = _state
 
+    private val _snackBarMessage = MutableStateFlow<String?>(null)
+    val snackBarMessage: StateFlow<String?> = _snackBarMessage
+
     private val cache = mutableMapOf<String, Crypto>()
-
     private var hasStarted = false
-
 
     fun startTracking() {
         if (hasStarted) return
@@ -35,7 +33,6 @@ class CryptoListViewModel(
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-
 
             try {
                 async { delay(1000) }.await()
@@ -57,10 +54,21 @@ class CryptoListViewModel(
 
 
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.message ?: "Unknown error") }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Unknown error",
+                    )
+                }
+                _snackBarMessage.value =
+                    "Connection error: ${e.message ?: "Please check your internet connection"}."
                 hasStarted = false
             }
         }
+    }
+
+    fun dismissSnackBar() {
+        _snackBarMessage.value = null
     }
 
     fun loadData() {
@@ -70,14 +78,4 @@ class CryptoListViewModel(
         startTracking()
 
     }
-
-//    fun getMockData(): List<Crypto> {
-//        return listOf(
-//            Crypto("BTCUSDT", 30000.0, 150.0, 0.5),
-//            Crypto("ETHUSDT", 2000.0, -30.0, -1.2),
-//            Crypto("ADAUSDT", 0.45, 0.01, 2.3),
-//            Crypto("SOLUSDT", 35.0, 1.5, 4.4),
-//            Crypto("XRPUSDT", 0.60, -0.02, -3.3),
-//        )
-//    }
 }

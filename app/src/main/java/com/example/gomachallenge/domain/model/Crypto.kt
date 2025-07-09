@@ -9,4 +9,4 @@ data class Crypto(
     val price: Double,
     val priceChange: Double,
     val priceChangePercent: Double
-): Parcelable
+) : Parcelable
