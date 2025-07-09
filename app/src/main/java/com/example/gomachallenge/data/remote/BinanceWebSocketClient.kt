@@ -20,6 +20,7 @@ class BinanceWebSocketClient : CryptoWebSocketClient {
             }
 
             override fun onMessage(ws: WebSocket, text: String) {
+//                println("Binance WebSocket: $text")
                 trySend(text)
             }
 
@@ -31,6 +32,7 @@ class BinanceWebSocketClient : CryptoWebSocketClient {
                 ws.close(code, reason)
                 close()
             }
+
         }
 
         client.newWebSocket(request, listener)
@@ -40,6 +42,7 @@ class BinanceWebSocketClient : CryptoWebSocketClient {
             webSocket = null
         }
     }
+
 
     override fun close() {
         webSocket?.close(1000, "Closed manually")

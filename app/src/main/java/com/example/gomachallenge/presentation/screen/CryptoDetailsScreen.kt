@@ -22,7 +22,9 @@ fun CryptoDetailScreen(crypto: Crypto, onBack: () -> Unit) {
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue.copy(alpha = 0.4f)),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(
+                            Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White
+                        )
                     }
                 })
 
@@ -38,7 +40,7 @@ fun CryptoDetailScreen(crypto: Crypto, onBack: () -> Unit) {
             Text("Symbol: ${crypto.symbol}")
             Text("Price: ${crypto.price}")
             Text("Change: ${crypto.priceChange}")
-            Text("Change %: ${crypto.priceChangePercent}")
+            Text("Change: ${crypto.priceChangePercent}%")
         }
     }
 }

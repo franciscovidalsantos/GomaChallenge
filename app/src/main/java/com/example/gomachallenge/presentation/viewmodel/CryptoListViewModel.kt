@@ -52,7 +52,7 @@ class CryptoListViewModel(
                             error = null
                         )
                     }
-
+                    async { delay(250) }.await()
                 }
 
 
