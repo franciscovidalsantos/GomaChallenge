@@ -33,18 +33,16 @@ class MainActivity : ComponentActivity() {
             val repository = remember {
                 CryptoRepositoryImpl(webSocketClient)
             }
-
-            val viewModel = remember {
+            val listViewModel = remember {
                 CryptoListViewModel(
-                    repository = repository,
-                    webSocketClient = webSocketClient,
+                    repository = repository, webSocketClient = webSocketClient
                 )
             }
 
             GomaChallengeTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
 
-                    AppNavigation(viewModel)
+                    AppNavigation(listViewModel, repository)
 
                 }
             }
