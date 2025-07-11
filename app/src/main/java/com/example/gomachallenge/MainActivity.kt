@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.gomachallenge.data.remote.BinanceWebSocketClient
 import com.example.gomachallenge.data.repository.CryptoRepositoryImpl
 import com.example.gomachallenge.presentation.viewmodel.CryptoListViewModel
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContent {
 
             // Initialize dependencies

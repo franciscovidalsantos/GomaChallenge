@@ -73,4 +73,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
 
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+
 }
